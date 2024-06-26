@@ -1,5 +1,6 @@
 package com.example.snapdiaryv3;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SavedDiariesFragment extends Fragment {
+public class SavedDiariesFragment extends Fragment implements DiaryAdapter.OnEntryClickListener {
 
     private RecyclerView recyclerView;
     private DiaryAdapter diaryAdapter;
@@ -48,6 +49,9 @@ public class SavedDiariesFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         diaryAdapter = new DiaryAdapter(requireContext(), new ArrayList<>());
         recyclerView.setAdapter(diaryAdapter);
+
+        // Set click listener
+        diaryAdapter.setOnEntryClickListener(this);
 
         // Load diary entries
         loadDiaryEntries();
@@ -75,8 +79,30 @@ public class SavedDiariesFragment extends Fragment {
                 Toast.makeText(requireContext(), "Failed to load diary entries: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
 
+    @Override
+    public void onEntryDeleteClicked(int position) {
+        if (mAuth.getCurrentUser() != null) {
+            List<DiaryEntry> entries = diaryAdapter.getDiaryEntries();
+            if (entries != null && position >= 0 && position < entries.size()) {
+                DiaryEntry entryToDelete = entries.get(position);
+                String entryId = entryToDelete.getEntryId();
 
-
+                diaryRef.child(entryId).removeValue()
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(requireContext(), "Diary entry deleted", Toast.LENGTH_SHORT).show();
+                            // Optionally, refresh your diary entries here if needed
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(requireContext(), "Failed to delete diary entry: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+            } else {
+                Toast.makeText(requireContext(), "Invalid entry position", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(requireContext(), "User not authenticated", Toast.LENGTH_SHORT).show();
+        }
     }
 }
+

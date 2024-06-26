@@ -1,56 +1,65 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- item_diary_entry.xml -->
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="8dp">
+    android:layout_margin="8dp"
+    android:padding="8dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
 
-    <TextView
-        android:id="@+id/textViewDescription"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Description"
-        android:textSize="16sp"
-        android:textColor="@android:color/black" />
+        android:orientation="vertical">
 
-    <RatingBar
-        android:id="@+id/ratingBarMood"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:numStars="5"
-        android:stepSize="0.5"
-        android:rating="3.5" />
+        <!-- Your diary entry content -->
+        <TextView
+            android:id="@+id/textViewDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:text="Description" />
 
-    <ImageView
-        android:id="@+id/imageViewPhoto"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:scaleType="centerCrop"
-        android:visibility="gone" />
+        <RatingBar
+            android:id="@+id/ratingBarMood"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="5"
+            android:rating="3"
+            android:stepSize="1" />
 
-    <Button
-        android:id="@+id/buttonPlayAudio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Play Audio"
-        android:visibility="gone" />
+        <ImageView
+            android:id="@+id/imageViewPhoto"
+            android:layout_width="match_parent"
+            android:layout_height="123dp"
+            android:layout_marginTop="8dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/placeholder_image" />
 
-    <TextView
-        android:id="@+id/textViewTimestamp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Date and Time"
-        android:textSize="14sp"
-        android:textColor="@android:color/darker_gray" />
+        <!-- Audio button, play button, etc. -->
+        <Button
+            android:id="@+id/buttonPlayAudio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Play Audio"
+            android:visibility="gone" />
 
-    <!-- Delete Button -->
-    <Button
-        android:id="@+id/buttonDelete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Delete"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-         />
+        <!-- Delete button -->
+        <Button
+            android:id="@+id/buttonDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete"
+            android:layout_marginTop="8dp" />
 
-</LinearLayout>
+        <!-- Timestamp -->
+        <TextView
+            android:id="@+id/textViewTimestamp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:textAppearanceSmall"
+            android:text="Timestamp" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
