@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "283831950947",
+    "project_id": "snapdiaryv3",
+    "storage_bucket": "snapdiaryv3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:283831950947:android:222de9c2d095eef2c26256",
+        "android_client_info": {
+          "package_name": "com.example.snapdiaryv3"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1qLUqi57Hfz0F3ox65QG8ETh2GKa_cUY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
