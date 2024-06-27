@@ -89,11 +89,11 @@ public class SavedDiariesFragment extends Fragment implements DiaryAdapter.OnEnt
 
     @Override
     public void onEntryDetailsClicked(DiaryEntry entry) {
-        // Handle the click event to navigate to DiaryEntryDetailsActivity (optional)
         Intent intent = new Intent(requireContext(), DiaryEntryDetailsActivity.class);
         intent.putExtra("entryId", entry.getEntryId());
         startActivity(intent);
     }
+
 
     @Override
     public void onEntryDeleteClicked(int position) {
