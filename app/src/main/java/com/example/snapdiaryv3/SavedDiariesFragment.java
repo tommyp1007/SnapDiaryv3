@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -57,7 +56,6 @@ public class SavedDiariesFragment extends Fragment implements DiaryAdapter.OnEnt
         // Load diary entries
         loadDiaryEntries();
 
-
         return view;
     }
 
@@ -69,6 +67,7 @@ public class SavedDiariesFragment extends Fragment implements DiaryAdapter.OnEnt
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     DiaryEntry entry = dataSnapshot.getValue(DiaryEntry.class);
                     if (entry != null) {
+                        entry.setEntryId(dataSnapshot.getKey()); // Set the entryId from Firebase key
                         entries.add(entry);
                     }
                 }
@@ -85,17 +84,12 @@ public class SavedDiariesFragment extends Fragment implements DiaryAdapter.OnEnt
 
     @Override
     public void onEntryClicked(DiaryEntry entry) {
-        // Handle item click here
-        // Launch Details Activity or Fragment and pass diary entry data
-        Intent intent = new Intent(requireContext(), DiaryEntryDetailsActivity.class);
-        intent.putExtra("entryId", entry.getEntryId()); // Example of passing entry ID
-        startActivity(intent);
+        // Handle item click here (optional)
     }
-
 
     @Override
     public void onEntryDetailsClicked(DiaryEntry entry) {
-        // Handle the click event to navigate to DiaryEntryDetailsActivity
+        // Handle the click event to navigate to DiaryEntryDetailsActivity (optional)
         Intent intent = new Intent(requireContext(), DiaryEntryDetailsActivity.class);
         intent.putExtra("entryId", entry.getEntryId());
         startActivity(intent);

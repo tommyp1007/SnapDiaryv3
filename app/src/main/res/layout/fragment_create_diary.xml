@@ -5,8 +5,8 @@
 
     <EditText
         android:id="@+id/editTextDescription"
-        android:layout_width="381dp"
-        android:layout_height="158dp"
+        android:layout_width="388dp"
+        android:layout_height="102dp"
         android:layout_alignParentTop="true"
         android:gravity="start"
         android:hint="Enter description"
@@ -98,7 +98,7 @@
         android:layout_marginTop="100dp"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:padding="0dp">
 
         <Button
             android:id="@+id/buttonSave"
@@ -118,7 +118,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/linearLayoutButtons"
         android:layout_centerVertical="true"
-        android:layout_marginTop="209dp"
+        android:layout_marginTop="159dp"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
         android:padding="0dp">

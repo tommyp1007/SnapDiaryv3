@@ -60,6 +60,10 @@ public class DiaryEntry {
         return entryId;
     }
 
+    public void setEntryId(String entryId) {
+        this.entryId = entryId;
+    }
+
     public long getTimestamp() {
         return timestamp;
     }

@@ -40,7 +40,7 @@ public class CreateDiaryFragment extends Fragment {
     private static final String TAG = "CreateDiaryFragment";
 
     private EditText editTextDescription;
-    private Button buttonCamera, buttonSelectImage, buttonRecordAudio, buttonStopAudio, buttonPlaybackAudio, buttonSave;
+    private Button buttonCamera, buttonSelectImage, buttonRecordAudio, buttonStopAudio, buttonPlaybackAudio, buttonSave, buttonReset;
     private RatingBar ratingBarMood;
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -78,6 +78,7 @@ public class CreateDiaryFragment extends Fragment {
         buttonStopAudio = view.findViewById(R.id.buttonStopAudio);
         buttonPlaybackAudio = view.findViewById(R.id.buttonPlaybackAudio);
         buttonSave = view.findViewById(R.id.buttonSave);
+        buttonReset = view.findViewById(R.id.buttonReset);
         ratingBarMood = view.findViewById(R.id.ratingBarMood);
 
         buttonCamera.setOnClickListener(v -> dispatchTakePictureIntent());
@@ -86,6 +87,7 @@ public class CreateDiaryFragment extends Fragment {
         buttonStopAudio.setOnClickListener(v -> stopRecording());
         buttonPlaybackAudio.setOnClickListener(v -> playRecording());
         buttonSave.setOnClickListener(v -> saveDiary());
+        buttonReset.setOnClickListener(this::resetInputs);
     }
 
     private void showImageSourceDialog() {
@@ -257,10 +259,35 @@ public class CreateDiaryFragment extends Fragment {
                     buttonRecordAudio.setVisibility(View.VISIBLE);
                     buttonStopAudio.setVisibility(View.GONE);
                     buttonPlaybackAudio.setVisibility(View.GONE);
+
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(requireContext(), "Failed to save diary entry: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    private void resetInputs(View view) {
+        // Clear text input
+        editTextDescription.setText("");
+        ratingBarMood.setRating(0);
+
+        // Reset image URI
+        imageUri = null;
+
+        // Reset audio recording
+        stopRecording(); // Stop if recording is in progress
+        audioFilePath = null;
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+
+        // Reset UI visibility for audio buttons
+        buttonRecordAudio.setVisibility(View.VISIBLE);
+        buttonStopAudio.setVisibility(View.GONE);
+        buttonPlaybackAudio.setVisibility(View.GONE);
+
+        Toast.makeText(requireContext(), "Inputs reset", Toast.LENGTH_SHORT).show();
     }
 
     @Override
