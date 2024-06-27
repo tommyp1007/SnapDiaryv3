@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -56,6 +57,7 @@ public class SavedDiariesFragment extends Fragment implements DiaryAdapter.OnEnt
         // Load diary entries
         loadDiaryEntries();
 
+
         return view;
     }
 
@@ -89,6 +91,7 @@ public class SavedDiariesFragment extends Fragment implements DiaryAdapter.OnEnt
         intent.putExtra("entryId", entry.getEntryId()); // Example of passing entry ID
         startActivity(intent);
     }
+
 
     @Override
     public void onEntryDetailsClicked(DiaryEntry entry) {

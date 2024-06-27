@@ -12,19 +12,12 @@
         android:onClick="onBackButtonClick" />
 
     <!-- Detailed diary entry content -->
-    <TextView
-        android:id="@+id/textViewEntryId"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:textAppearanceMedium"
-        android:layout_below="@id/buttonBack"
-        android:padding="16dp"
-        android:text="Detailed Description" />
+
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/textViewEntryId"
+        android:layout_below="@id/buttonBack"
         android:layout_margin="8dp"
         android:padding="8dp"
         android:foreground="?android:attr/selectableItemBackground"
@@ -40,13 +33,13 @@
             <TextView
                 android:id="@+id/textViewDescription"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:textAppearanceMedium"
-                android:text="Description" />
+                android:layout_height="105dp"
+                android:text="Description"
+                android:textAppearance="?android:textAppearanceMedium" />
 
             <RatingBar
                 android:id="@+id/ratingBarMood"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:numStars="5"
                 android:rating="3"

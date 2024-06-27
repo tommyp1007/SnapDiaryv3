@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:gravity="bottom"
     android:padding="16dp"
-    android:background="?attr/colorPrimaryDark">
+    android:background="@android:color/holo_blue_bright">
 
     <ImageView
         android:layout_width="wrap_content"

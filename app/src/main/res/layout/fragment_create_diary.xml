@@ -22,7 +22,9 @@
         android:numStars="5"
         android:padding="16dp"
         android:rating="0"
-        android:stepSize="1" />
+        android:stepSize="1"
+        style="@style/CustomRatingBar"/>
+
 
     <LinearLayout
         android:id="@+id/linearLayoutButtons"
@@ -109,5 +111,30 @@
 
 
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/LinearLayoutReset"
+        android:layout_width="383dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/linearLayoutButtons"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="209dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:padding="0dp">
+
+        <Button
+            android:id="@+id/buttonReset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/buttonSave"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:onClick="resetInputs"
+            android:text="Reset" />
+
+
+    </LinearLayout>
+
 
 </RelativeLayout>
