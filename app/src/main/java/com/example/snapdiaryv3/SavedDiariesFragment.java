@@ -82,6 +82,23 @@ public class SavedDiariesFragment extends Fragment implements DiaryAdapter.OnEnt
     }
 
     @Override
+    public void onEntryClicked(DiaryEntry entry) {
+        // Handle item click here
+        // Launch Details Activity or Fragment and pass diary entry data
+        Intent intent = new Intent(requireContext(), DiaryEntryDetailsActivity.class);
+        intent.putExtra("entryId", entry.getEntryId()); // Example of passing entry ID
+        startActivity(intent);
+    }
+
+    @Override
+    public void onEntryDetailsClicked(DiaryEntry entry) {
+        // Handle the click event to navigate to DiaryEntryDetailsActivity
+        Intent intent = new Intent(requireContext(), DiaryEntryDetailsActivity.class);
+        intent.putExtra("entryId", entry.getEntryId());
+        startActivity(intent);
+    }
+
+    @Override
     public void onEntryDeleteClicked(int position) {
         if (mAuth.getCurrentUser() != null) {
             List<DiaryEntry> entries = diaryAdapter.getDiaryEntries();
@@ -105,4 +122,3 @@ public class SavedDiariesFragment extends Fragment implements DiaryAdapter.OnEnt
         }
     }
 }
-

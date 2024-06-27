@@ -1,8 +1,6 @@
 package com.example.snapdiaryv3;
 
 import android.content.Context;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -25,11 +22,13 @@ import java.util.Locale;
 public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.DiaryViewHolder> {
 
     private Context context;
-    private List<DiaryEntry> diaryEntries;
-    private OnEntryClickListener onEntryClickListener;
+    private static List<DiaryEntry> diaryEntries;
+    private static OnEntryClickListener onEntryClickListener;
 
     public interface OnEntryClickListener {
         void onEntryDeleteClicked(int position);
+        void onEntryClicked(DiaryEntry entry);
+        void onEntryDetailsClicked(DiaryEntry entry);
     }
 
     public DiaryAdapter(Context context, List<DiaryEntry> diaryEntries) {
@@ -42,8 +41,9 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.DiaryViewHol
     }
 
     public List<DiaryEntry> getDiaryEntries() {
-        return diaryEntries; // Ensure this method is correctly implemented
+        return diaryEntries;
     }
+
     public void setDiaryEntries(List<DiaryEntry> diaryEntries) {
         this.diaryEntries = diaryEntries;
         notifyDataSetChanged();
@@ -72,7 +72,7 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.DiaryViewHol
         if (entry.getAudioUri() != null) {
             holder.buttonPlayAudio.setVisibility(View.VISIBLE);
             holder.buttonPlayAudio.setOnClickListener(v -> {
-                // Handle audio playback
+                // Handle audio playback if needed
             });
         } else {
             holder.buttonPlayAudio.setVisibility(View.GONE);
@@ -84,6 +84,18 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.DiaryViewHol
             }
         });
 
+        holder.itemView.setOnClickListener(v -> {
+            if (onEntryClickListener != null) {
+                onEntryClickListener.onEntryClicked(entry);
+            }
+        });
+
+        holder.buttonDetails.setOnClickListener(v -> {
+            if (onEntryClickListener != null) {
+                onEntryClickListener.onEntryDetailsClicked(entry);
+            }
+        });
+
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
         String dateString = sdf.format(new Date(entry.getTimestamp()));
         holder.textViewTimestamp.setText(dateString);
@@ -91,7 +103,7 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.DiaryViewHol
 
     @Override
     public int getItemCount() {
-        return diaryEntries != null ? diaryEntries.size() : 0;
+        return diaryEntries.size();
     }
 
     public static class DiaryViewHolder extends RecyclerView.ViewHolder {
@@ -102,6 +114,7 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.DiaryViewHol
         Button buttonPlayAudio;
         Button buttonDelete;
         TextView textViewTimestamp;
+        Button buttonDetails;
 
         public DiaryViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -111,6 +124,19 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.DiaryViewHol
             buttonPlayAudio = itemView.findViewById(R.id.buttonPlayAudio);
             buttonDelete = itemView.findViewById(R.id.buttonDelete);
             textViewTimestamp = itemView.findViewById(R.id.textViewTimestamp);
+            buttonDetails = itemView.findViewById(R.id.buttonDetails);
+
+            itemView.setOnClickListener(v -> {
+                if (onEntryClickListener != null) {
+                    onEntryClickListener.onEntryClicked(diaryEntries.get(getAdapterPosition()));
+                }
+            });
+
+            buttonDetails.setOnClickListener(v -> {
+                if (onEntryClickListener != null) {
+                    onEntryClickListener.onEntryDetailsClicked(diaryEntries.get(getAdapterPosition()));
+                }
+            });
         }
     }
 }
