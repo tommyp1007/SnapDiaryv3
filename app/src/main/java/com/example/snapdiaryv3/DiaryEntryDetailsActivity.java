@@ -1,5 +1,7 @@
 package com.example.snapdiaryv3;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
+
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -26,10 +28,13 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
-public class DiaryEntryDetailsActivity extends AppCompatActivity {
+public class DiaryEntryDetailsActivity extends AppCompatActivity implements DiaryAdapter.OnEntryClickListener  {
 
+
+    private DiaryAdapter diaryAdapter;
     private FirebaseAuth mAuth;
     private DatabaseReference diaryRef;
     private String userId;
@@ -55,6 +60,7 @@ public class DiaryEntryDetailsActivity extends AppCompatActivity {
             finish();
             return;
         }
+
 
         diaryRef = FirebaseDatabase.getInstance().getReference("diaries").child(userId);
 
@@ -131,6 +137,16 @@ public class DiaryEntryDetailsActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onEntryDetailsClicked(DiaryEntry entry) {
+
+    }
+
+
+    public void onEntryClicked(DiaryEntry entry) {
+        // Handle item click here (optional)
+    }
+
     public void onBackButtonClick(View view) {
         onBackPressed();
     }
@@ -143,5 +159,36 @@ public class DiaryEntryDetailsActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+
+    @Override
+    public void onEntryDeleteClicked(int position) {
+        if (mAuth.getCurrentUser() != null) {
+            List<DiaryEntry> entries = diaryAdapter.getDiaryEntries();
+            if (entries != null && position >= 0 && position < entries.size()) {
+                DiaryEntry entryToDelete = entries.get(position);
+                String entryId = entryToDelete.getEntryId();
+
+                diaryRef.child(entryId).removeValue()
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(DiaryEntryDetailsActivity.this, "Diary entry deleted", Toast.LENGTH_SHORT).show();
+                            // Optionally, refresh your diary entries here if needed
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(DiaryEntryDetailsActivity.this, "Failed to delete diary entry: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+            } else {
+                Toast.makeText(DiaryEntryDetailsActivity.this, "Invalid entry position", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(DiaryEntryDetailsActivity.this, "User not authenticated", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
+
+
 }
 

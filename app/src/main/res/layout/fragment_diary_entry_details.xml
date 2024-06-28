@@ -24,7 +24,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
             <!-- Your diary entry content -->
@@ -37,12 +37,12 @@
 
             <RatingBar
                 android:id="@+id/ratingBarMood"
+                style="@style/CustomRatingBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:numStars="5"
                 android:rating="3"
-                android:stepSize="1"
-                style="@style/CustomRatingBar"/>
+                android:stepSize="1" />
 
             <ImageView
                 android:id="@+id/imageViewPhoto"
@@ -53,22 +53,32 @@
                 android:src="@drawable/snapdiarylogo" />
 
             <!-- Audio button -->
+
+            <!-- Timestamp -->
             <Button
                 android:id="@+id/buttonPlaybackAudio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Play Audio"
-                android:visibility="visible"
                 android:layout_gravity="center"
-                android:onClick="playRecording" />
+                android:onClick="playRecording"
+                android:text="Play Audio"
+                android:visibility="visible" />
 
-            <!-- Timestamp -->
             <TextView
                 android:id="@+id/textViewTimestamp"
                 android:layout_width="match_parent"
+                android:layout_height="51dp"
+                android:text="Timestamp"
+                android:textAppearance="?android:textAppearanceSmall" />
+
+            <Button
+                android:id="@+id/buttonDelete"
+                android:layout_width="120dp"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:textAppearanceSmall"
-                android:text="Timestamp" />
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:text="Delete" />
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>

@@ -21,6 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SavedDiariesFragment extends Fragment implements DiaryAdapter.OnEntryClickListener {
@@ -60,7 +61,7 @@ public class SavedDiariesFragment extends Fragment implements DiaryAdapter.OnEnt
     }
 
     private void loadDiaryEntries() {
-        diaryRef.addValueEventListener(new ValueEventListener() {
+        diaryRef.orderByChild("timestamp").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<DiaryEntry> entries = new ArrayList<>();
@@ -71,6 +72,8 @@ public class SavedDiariesFragment extends Fragment implements DiaryAdapter.OnEnt
                         entries.add(entry);
                     }
                 }
+                // Reverse the list to display latest diary first
+                Collections.reverse(entries);
                 diaryAdapter.setDiaryEntries(entries);
                 diaryAdapter.notifyDataSetChanged();
             }
@@ -81,6 +84,7 @@ public class SavedDiariesFragment extends Fragment implements DiaryAdapter.OnEnt
             }
         });
     }
+
 
     @Override
     public void onEntryClicked(DiaryEntry entry) {

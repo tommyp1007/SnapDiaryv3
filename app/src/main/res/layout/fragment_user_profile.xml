@@ -5,16 +5,7 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-
-    <LinearLayout
-        android:id="@+id/linearLayoutButtons"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal"
-        android:padding="16dp">
-
-    <!-- TextView for displaying user email -->
+    <!-- Email TextView -->
     <TextView
         android:id="@+id/emailText"
         android:layout_width="wrap_content"
@@ -23,24 +14,44 @@
         android:textSize="18sp"
         android:padding="8dp"/>
 
+    <!-- Profile Picture ImageView -->
+    <ImageView
+        android:id="@+id/profileImageView"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/ic_add"
+        android:layout_gravity="center_horizontal"
+        android:scaleType="centerCrop"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"/>
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/LinearLogout"
-        android:layout_width="match_parent"
+    <!-- Upload Image Button -->
+    <Button
+        android:id="@+id/uploadImageButton"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal"
-        android:padding="16dp">
+        android:text="Upload Profile Picture"
+        android:layout_gravity="center_horizontal"
+        android:padding="12dp"/>
 
+    <!-- Change Password Button -->
+    <Button
+        android:id="@+id/changePasswordButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Change Password"
+        android:layout_gravity="center_horizontal"
+        android:padding="12dp"
+        android:layout_marginTop="16dp"/>
 
+    <!-- Logout Button -->
     <Button
         android:id="@+id/logoutButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:text="Logout" />
+        android:text="Logout"
+        android:layout_gravity="center_horizontal"
+        android:padding="12dp"
+        android:layout_marginTop="16dp"/>
 
-    </LinearLayout>
 </LinearLayout>
