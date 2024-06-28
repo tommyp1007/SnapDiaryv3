@@ -5,16 +5,18 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <View
+        android:id="@+id/spacerView"
+        android:layout_width="match_parent"
+        android:layout_height="77dp"
+        android:background="@android:color/transparent"
+        android:clickable="true"
+        android:visibility="invisible" />
+
     <!-- Email TextView -->
-    <TextView
-        android:id="@+id/emailText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="User Email"
-        android:textSize="18sp"
-        android:padding="8dp"/>
 
     <!-- Profile Picture ImageView -->
+
     <ImageView
         android:id="@+id/profileImageView"
         android:layout_width="120dp"
@@ -26,13 +28,23 @@
         android:layout_marginBottom="16dp"/>
 
     <!-- Upload Image Button -->
+    <TextView
+        android:id="@+id/emailText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="8dp"
+        android:text="User Email"
+        android:textSize="18sp" />
+
     <Button
         android:id="@+id/uploadImageButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Upload Profile Picture"
         android:layout_gravity="center_horizontal"
-        android:padding="12dp"/>
+        android:padding="12dp"
+        style="@style/LightBlueButtonStyle"/>
 
     <!-- Change Password Button -->
     <Button
@@ -42,7 +54,8 @@
         android:text="Change Password"
         android:layout_gravity="center_horizontal"
         android:padding="12dp"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        style="@style/LightBlueButtonStyle"/>
 
     <!-- Logout Button -->
     <Button
@@ -52,6 +65,7 @@
         android:text="Logout"
         android:layout_gravity="center_horizontal"
         android:padding="12dp"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        style="@style/LightBlueButtonStyle"/>
 
 </LinearLayout>

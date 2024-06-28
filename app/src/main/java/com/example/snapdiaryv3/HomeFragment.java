@@ -127,4 +127,6 @@ public class HomeFragment extends Fragment implements DiaryAdapter.OnEntryClickL
             Toast.makeText(requireContext(), "User not authenticated", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 }

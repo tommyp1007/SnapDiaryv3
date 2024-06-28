@@ -21,7 +21,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="23dp"
         android:onClick="openLogin"
-        android:text="LOGIN" />
+        android:text="LOGIN"
+        style="@style/LightBlueButtonStyle"/>
 
     <!-- SIGN UP Button -->
     <Button
@@ -32,5 +33,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="23dp"
         android:onClick="openRegister"
-        android:text="SIGN UP" />
+        android:text="SIGN UP"
+        style="@style/LightBlueButtonStyle"/>
 </RelativeLayout>
