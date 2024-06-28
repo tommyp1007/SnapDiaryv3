@@ -92,7 +92,7 @@ public class CreateDiaryFragment extends Fragment {
         ratingBarMood = view.findViewById(R.id.ratingBarMood);
 
 
-        buttonCamera.setOnClickListener(v -> takePicture()-);
+        buttonCamera.setOnClickListener(v -> takePicture());
         buttonSelectImage.setOnClickListener(v -> showImageSourceDialog());
         buttonRecordAudio.setOnClickListener(v -> checkAudioPermissionsAndStartRecording());
         buttonStopAudio.setOnClickListener(v -> stopRecording());
