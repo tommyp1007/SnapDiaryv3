@@ -184,7 +184,7 @@ public class CreateDiaryFragment extends Fragment {
                 .setItems(new String[]{"Take Picture", "Choose from Gallery"}, (dialog, which) -> {
                     switch (which) {
                         case 0: // Take Picture
-                            dispatchTakePictureIntent();
+                            takePicture();
                             break;
                         case 1: // Choose from Gallery
                             dispatchPickPictureIntent();
