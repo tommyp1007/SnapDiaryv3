@@ -1,6 +1,7 @@
 package com.example.snapdiaryv3;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -90,7 +91,8 @@ public class CreateDiaryFragment extends Fragment {
         buttonReset = view.findViewById(R.id.buttonReset);
         ratingBarMood = view.findViewById(R.id.ratingBarMood);
 
-        buttonCamera.setOnClickListener(v -> dispatchTakePictureIntent());
+
+        buttonCamera.setOnClickListener(v -> takePicture()-);
         buttonSelectImage.setOnClickListener(v -> showImageSourceDialog());
         buttonRecordAudio.setOnClickListener(v -> checkAudioPermissionsAndStartRecording());
         buttonStopAudio.setOnClickListener(v -> stopRecording());
@@ -100,7 +102,7 @@ public class CreateDiaryFragment extends Fragment {
 
         imageCaptureLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    if (result.getResultCode() == getActivity().RESULT_OK) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
                         if (imageUri != null) {
                             Toast.makeText(requireContext(), "Image captured!", Toast.LENGTH_SHORT).show();
                         } else {
@@ -108,6 +110,8 @@ public class CreateDiaryFragment extends Fragment {
                         }
                     }
                 });
+
+
 
         imagePickLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -122,6 +126,18 @@ public class CreateDiaryFragment extends Fragment {
                 });
     }
 
+    private void checkCameraPermissionsAndTakePicture() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(requireActivity(),
+                    new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
+                    REQUEST_CAMERA_PERMISSION);
+        } else {
+            dispatchTakePictureIntent();
+        }
+    }
     private void takePicture() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
@@ -134,19 +150,31 @@ public class CreateDiaryFragment extends Fragment {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         if (requestCode == REQUEST_CAMERA_PERMISSION) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                takePicture();
+                dispatchTakePictureIntent();
             } else {
                 Toast.makeText(requireContext(), "Camera permission denied", Toast.LENGTH_SHORT).show();
             }
-        } else if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startRecording();
-            } else {
-                Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                Log.e(TAG, "Error creating image file", ex);
+                Toast.makeText(requireContext(), "Error creating image file", Toast.LENGTH_SHORT).show();
             }
+            if (photoFile != null) {
+                imageUri = FileProvider.getUriForFile(requireContext(), "com.example.snapdiaryv3.fileprovider", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                imageCaptureLauncher.launch(takePictureIntent);
+            }
+        } else {
+            Toast.makeText(requireContext(), "No camera app found", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -166,23 +194,8 @@ public class CreateDiaryFragment extends Fragment {
                 .show();
     }
 
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                Toast.makeText(requireContext(), "Error creating image file", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "Error creating image file", ex);
-            }
-            if (photoFile != null) {
-                imageUri = FileProvider.getUriForFile(requireContext(), "com.example.snapdiaryv3.fileprovider", photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                imageCaptureLauncher.launch(takePictureIntent);
-            }
-        }
-    }
+
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -232,18 +245,17 @@ public class CreateDiaryFragment extends Fragment {
     }
 
     private File createImageFile() throws IOException {
+        // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = requireActivity().getExternalFilesDir("images");
-        if (storageDir != null && !storageDir.exists()) {
-            if (!storageDir.mkdirs()) {
-                Log.e(TAG, "Failed to create directory");
-                return null;
-            }
-        }
-        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
-        return image;
+        File storageDir = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        return File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
     }
+
 
     private void dispatchPickPictureIntent() {
         Intent pickPictureIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);

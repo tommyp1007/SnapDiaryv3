@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
@@ -47,6 +48,9 @@ public class DiaryEntryDetailsActivity extends AppCompatActivity implements Diar
     private MediaPlayer mediaPlayer;
     private String audioFilePath;
 
+    private RecyclerView recyclerView;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +64,11 @@ public class DiaryEntryDetailsActivity extends AppCompatActivity implements Diar
             finish();
             return;
         }
+        recyclerView.setAdapter(diaryAdapter);
+
+        // Set click listener
+        diaryAdapter.setOnEntryClickListener(this);
+
 
 
         diaryRef = FirebaseDatabase.getInstance().getReference("diaries").child(userId);
@@ -144,7 +153,7 @@ public class DiaryEntryDetailsActivity extends AppCompatActivity implements Diar
 
 
     public void onEntryClicked(DiaryEntry entry) {
-        // Handle item click here (optional)
+       
     }
 
     public void onBackButtonClick(View view) {
