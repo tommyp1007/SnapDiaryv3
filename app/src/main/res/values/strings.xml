@@ -1,5 +1,12 @@
 <resources>
     <string name="app_name">SnapDiaryv3</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_create_diary">Create Diary</string>
+    <string name="menu_saved_diaries">Saved Diaries</string>
+    <string name="menu_mood_tracker">Mood Tracker</string>
+    <string name="menu_user_profile">User Profile</string>
 </resources>

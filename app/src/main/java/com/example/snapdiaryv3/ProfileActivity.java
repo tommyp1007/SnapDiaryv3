@@ -1,19 +1,26 @@
 package com.example.snapdiaryv3;
 
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager2.widget.ViewPager2;
+import android.view.MenuItem;
 
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.example.snapdiaryv3.R;
 
-public class ProfileActivity extends AppCompatActivity {
+
+public class ProfileActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     FirebaseAuth auth;
     FirebaseUser user;
+    private DrawerLayout drawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,30 +30,52 @@ public class ProfileActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
-        ViewPager2 viewPager = findViewById(R.id.view_pager);
-        TabLayout tabLayout = findViewById(R.id.tab_layout);
+        drawer = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this);
-        viewPager.setAdapter(sectionsPagerAdapter);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
 
-        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
-            switch (position) {
-                case 0:
-                    tab.setText("Home");
-                    break;
-                case 1:
-                    tab.setText("Create Diary");
-                    break;
-                case 2:
-                    tab.setText("Saved Diaries");
-                    break;
-                case 3:
-                    tab.setText("Mood Tracker");
-                    break;
-                case 4:
-                    tab.setText("Profile");
-                    break;
-            }
-        }).attach();
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
+            navigationView.setCheckedItem(R.id.nav_home);
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        Fragment selectedFragment = null;
+        int itemId = item.getItemId();
+
+        if (itemId == R.id.nav_home) {
+            selectedFragment = new HomeFragment();
+        } else if (itemId == R.id.nav_create_diary) {
+            selectedFragment = new CreateDiaryFragment();
+        } else if (itemId == R.id.nav_saved_diaries) {
+            selectedFragment = new SavedDiariesFragment();
+        } else if (itemId == R.id.nav_mood_tracker) {
+            selectedFragment = new MoodTrackerFragment();
+        } else if (itemId == R.id.nav_user_profile) {
+            selectedFragment = new UserProfileFragment();
+        }
+
+        if (selectedFragment != null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
+        }
+
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 }

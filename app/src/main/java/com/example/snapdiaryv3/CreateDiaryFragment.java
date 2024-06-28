@@ -1,14 +1,15 @@
 package com.example.snapdiaryv3;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,11 +20,14 @@ import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,9 +35,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-
-import static android.app.Activity.RESULT_OK;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class CreateDiaryFragment extends Fragment {
 
@@ -42,14 +48,17 @@ public class CreateDiaryFragment extends Fragment {
     private EditText editTextDescription;
     private Button buttonCamera, buttonSelectImage, buttonRecordAudio, buttonStopAudio, buttonPlaybackAudio, buttonSave, buttonReset;
     private RatingBar ratingBarMood;
-
     private static final int REQUEST_IMAGE_CAPTURE = 1;
-    private static final int REQUEST_IMAGE_PICK = 2;
+    private static final int REQUEST_CAMERA_PERMISSION = 100;
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+
     private Uri imageUri;
     private DatabaseReference databaseReference;
     private DatabaseReference diaryRef;
     private FirebaseAuth mAuth;
+
+    private ActivityResultLauncher<Intent> imageCaptureLauncher;
+    private ActivityResultLauncher<Intent> imagePickLauncher;
 
     // For audio recording and playback
     private MediaRecorder mediaRecorder;
@@ -87,7 +96,58 @@ public class CreateDiaryFragment extends Fragment {
         buttonStopAudio.setOnClickListener(v -> stopRecording());
         buttonPlaybackAudio.setOnClickListener(v -> playRecording());
         buttonSave.setOnClickListener(v -> saveDiary());
-        buttonReset.setOnClickListener(this::resetInputs);
+        buttonReset.setOnClickListener(v->resetInputs());
+
+        imageCaptureLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == getActivity().RESULT_OK) {
+                        if (imageUri != null) {
+                            Toast.makeText(requireContext(), "Image captured!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(requireContext(), "Failed to capture image", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+        imagePickLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == getActivity().RESULT_OK) {
+                        if (result.getData() != null && result.getData().getData() != null) {
+                            imageUri = result.getData().getData();
+                            Toast.makeText(requireContext(), "Image selected!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(requireContext(), "Failed to select image", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    private void takePicture() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        } else {
+            Toast.makeText(requireContext(), "No camera app found", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                takePicture();
+            } else {
+                Toast.makeText(requireContext(), "Camera permission denied", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startRecording();
+            } else {
+                Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void showImageSourceDialog() {
@@ -109,43 +169,93 @@ public class CreateDiaryFragment extends Fragment {
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        }
-    }
-
-    private void dispatchPickPictureIntent() {
-        Intent pickPictureIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        if (pickPictureIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
-            startActivityForResult(pickPictureIntent, REQUEST_IMAGE_PICK);
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                Toast.makeText(requireContext(), "Error creating image file", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Error creating image file", ex);
+            }
+            if (photoFile != null) {
+                imageUri = FileProvider.getUriForFile(requireContext(), "com.example.snapdiaryv3.fileprovider", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                imageCaptureLauncher.launch(takePictureIntent);
+            }
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_IMAGE_CAPTURE) {
-                if (data != null && data.getExtras() != null) {
-                    imageUri = data.getData();
-                    Toast.makeText(requireContext(), "Image captured!", Toast.LENGTH_SHORT).show();
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == getActivity().RESULT_OK) {
+            if (data != null && data.getExtras() != null) {
+                Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
+                if (imageBitmap != null) {
+                    // Save the image to storage or display it in your UI
+                    saveImageToStorage(imageBitmap); // Example method to save image
                 } else {
                     Toast.makeText(requireContext(), "Failed to capture image", Toast.LENGTH_SHORT).show();
                 }
-            } else if (requestCode == REQUEST_IMAGE_PICK) {
-                if (data != null && data.getData() != null) {
-                    imageUri = data.getData();
-                    Toast.makeText(requireContext(), "Image selected!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(requireContext(), "Failed to select image", Toast.LENGTH_SHORT).show();
-                }
+            } else {
+                Toast.makeText(requireContext(), "Failed to capture image", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
+    private void saveImageToStorage(Bitmap bitmap) {
+        // Example: Save bitmap to a file or database, or display it in an ImageView
+        // Here, you can save the bitmap to a specific directory or Firebase Storage
+
+
+        // For saving to a directory in external storage:
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + ".jpg";
+
+        File storageDir = requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File imageFile = new File(storageDir, imageFileName);
+
+        try {
+            FileOutputStream fos = new FileOutputStream(imageFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+
+            // Optionally, store the image URI for further use
+            imageUri = Uri.fromFile(imageFile);
+
+            // Notify user or perform any other necessary action
+            Toast.makeText(requireContext(), "Image saved successfully", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(requireContext(), "Failed to save image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = requireActivity().getExternalFilesDir("images");
+        if (storageDir != null && !storageDir.exists()) {
+            if (!storageDir.mkdirs()) {
+                Log.e(TAG, "Failed to create directory");
+                return null;
+            }
+        }
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+        return image;
+    }
+
+    private void dispatchPickPictureIntent() {
+        Intent pickPictureIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        imagePickLauncher.launch(pickPictureIntent);
+    }
+
     private void checkAudioPermissionsAndStartRecording() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_AUDIO_PERMISSION);
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_RECORD_AUDIO_PERMISSION);
             } else {
                 startRecording();
             }
@@ -154,27 +264,8 @@ public class CreateDiaryFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_RECORD_AUDIO_PERMISSION) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startRecording();
-            } else {
-                Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
     private void startRecording() {
-        if (mAuth.getCurrentUser() == null) {
-            Log.e(TAG, "User is not authenticated");
-            Toast.makeText(requireContext(), "You need to be logged in to record audio", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         if (mediaRecorder == null) {
-            // Initialize media recorder
             String fileName = "audio_" + System.currentTimeMillis() + ".3gp";
             File storageDir = requireActivity().getExternalFilesDir("audio");
             if (storageDir != null) {
@@ -210,7 +301,7 @@ public class CreateDiaryFragment extends Fragment {
             Toast.makeText(requireContext(), "Recording stopped", Toast.LENGTH_SHORT).show();
 
             // Update UI
-            buttonRecordAudio.setVisibility(View.GONE);
+            buttonRecordAudio.setVisibility(View.VISIBLE);
             buttonStopAudio.setVisibility(View.GONE);
             buttonPlaybackAudio.setVisibility(View.VISIBLE);
         }
@@ -225,6 +316,7 @@ public class CreateDiaryFragment extends Fragment {
             Toast.makeText(requireContext(), "Playing audio", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
             e.printStackTrace();
+            Toast.makeText(requireContext(), "Failed to play audio", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -245,28 +337,20 @@ public class CreateDiaryFragment extends Fragment {
 
         long timestamp = System.currentTimeMillis();
 
-        DiaryEntry diaryEntry = new DiaryEntry(description, moodLevel, imageUri != null ? imageUri.toString() : null, audioFilePath, timestamp);
+        DiaryEntry diaryEntry = new DiaryEntry(description, moodLevel, imageUri != null ?
+                imageUri.toString() : null, audioFilePath, timestamp);
 
         diaryRef.child(entryId).setValue(diaryEntry)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(requireContext(), "Diary entry saved successfully", Toast.LENGTH_SHORT).show();
-                    editTextDescription.setText("");
-                    ratingBarMood.setRating(0);
-                    imageUri = null;
-                    audioFilePath = null;
-
-                    // Reset UI after saving
-                    buttonRecordAudio.setVisibility(View.VISIBLE);
-                    buttonStopAudio.setVisibility(View.GONE);
-                    buttonPlaybackAudio.setVisibility(View.GONE);
-
+                    resetInputs(); // Clear inputs after saving
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(requireContext(), "Failed to save diary entry: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
-    private void resetInputs(View view) {
+    private void resetInputs() {
         // Clear text input
         editTextDescription.setText("");
         ratingBarMood.setRating(0);
@@ -303,3 +387,4 @@ public class CreateDiaryFragment extends Fragment {
         }
     }
 }
+

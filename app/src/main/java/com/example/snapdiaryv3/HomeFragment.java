@@ -13,29 +13,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -47,11 +24,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements DiaryAdapter.OnEntryClickListener {
 
     private RecyclerView recyclerView;
     private DiaryAdapter diaryAdapter;
     private DatabaseReference diaryRef;
+    private FirebaseAuth mAuth;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -64,7 +42,7 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         // Initialize Firebase components
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
             // Handle the case where user is not logged in
@@ -80,6 +58,7 @@ public class HomeFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerViewHome);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         diaryAdapter = new DiaryAdapter(requireContext(), new ArrayList<>());
+        diaryAdapter.setOnEntryClickListener(this);
         recyclerView.setAdapter(diaryAdapter);
 
         // Load latest 3 diary entries
@@ -102,7 +81,6 @@ public class HomeFragment extends Fragment {
                 // Reverse the list to display latest entries first
                 Collections.reverse(entries);
                 diaryAdapter.setDiaryEntries(entries);
-                diaryAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -110,5 +88,41 @@ public class HomeFragment extends Fragment {
                 Toast.makeText(requireContext(), "Failed to load diary entries: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public void onEntryDeleteClicked(int position) {
+        if (mAuth.getCurrentUser() != null) {
+            List<DiaryEntry> entries = diaryAdapter.getDiaryEntries();
+            if (entries != null && position >= 0 && position < entries.size()) {
+                DiaryEntry entryToDelete = entries.get(position);
+                String entryId = entryToDelete.getEntryId();
+
+                diaryRef.child(entryId).removeValue()
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(requireContext(), "Diary entry deleted", Toast.LENGTH_SHORT).show();
+                            // Remove the entry from the list and notify adapter
+                            entries.remove(position);
+                            diaryAdapter.setDiaryEntries(entries);
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(requireContext(), "Failed to delete diary entry: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+            } else {
+                Toast.makeText(requireContext(), "Invalid entry position", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(requireContext(), "User not authenticated", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onEntryClicked(DiaryEntry entry) {
+        // Handle entry click
+    }
+
+    @Override
+    public void onEntryDetailsClicked(DiaryEntry entry) {
+        // Handle entry details click
     }
 }

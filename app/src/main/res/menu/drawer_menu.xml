@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <item
         android:id="@+id/nav_home"
-        android:title="Home" />
 
+        android:title="@string/menu_home" />
     <item
         android:id="@+id/nav_create_diary"
-        android:title="Create Diary" />
 
+        android:title="@string/menu_create_diary" />
     <item
         android:id="@+id/nav_saved_diaries"
-        android:title="Saved Diaries" />
 
+        android:title="@string/menu_saved_diaries" />
     <item
         android:id="@+id/nav_mood_tracker"
-        android:title="Mood Tracker" />
 
+        android:title="@string/menu_mood_tracker" />
     <item
         android:id="@+id/nav_user_profile"
-        android:title="User Profile" />
 
+        android:title="@string/menu_user_profile" />
 </menu>
