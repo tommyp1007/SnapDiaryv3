@@ -62,6 +62,9 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.DiaryViewHol
         holder.textViewDescription.setText(entry.getDescription());
         holder.ratingBarMood.setRating(entry.getMoodLevel());
 
+
+            holder.ratingBarMood.setIsIndicator(true); // Disable RatingBar
+
         if (entry.getImageUri() != null) {
             holder.imageViewPhoto.setVisibility(View.VISIBLE);
             Glide.with(context).load(entry.getImageUri()).into(holder.imageViewPhoto);
@@ -135,6 +138,15 @@ public class DiaryAdapter extends RecyclerView.Adapter<DiaryAdapter.DiaryViewHol
             buttonDetails.setOnClickListener(v -> {
                 if (onEntryClickListener != null) {
                     onEntryClickListener.onEntryDetailsClicked(diaryEntries.get(getAdapterPosition()));
+                }
+            });
+
+            buttonDelete.setOnClickListener(v -> {
+                if (onEntryClickListener != null) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        onEntryClickListener.onEntryDeleteClicked(position);
+                    }
                 }
             });
         }

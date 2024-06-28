@@ -45,10 +45,11 @@ import java.util.Locale;
 public class CreateDiaryFragment extends Fragment {
 
     private static final String TAG = "CreateDiaryFragment";
+    private RatingBar ratingBarMood;
 
     private EditText editTextDescription;
     private Button buttonCamera, buttonSelectImage, buttonRecordAudio, buttonStopAudio, buttonPlaybackAudio, buttonSave, buttonReset;
-    private RatingBar ratingBarMood;
+
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int REQUEST_CAMERA_PERMISSION = 100;
     private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;

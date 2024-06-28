@@ -48,7 +48,7 @@ public class DiaryEntryDetailsActivity extends AppCompatActivity implements Diar
     private MediaPlayer mediaPlayer;
     private String audioFilePath;
 
-    private RecyclerView recyclerView;
+
 
 
     @Override
@@ -64,10 +64,7 @@ public class DiaryEntryDetailsActivity extends AppCompatActivity implements Diar
             finish();
             return;
         }
-        recyclerView.setAdapter(diaryAdapter);
 
-        // Set click listener
-        diaryAdapter.setOnEntryClickListener(this);
 
 
 
@@ -153,7 +150,7 @@ public class DiaryEntryDetailsActivity extends AppCompatActivity implements Diar
 
 
     public void onEntryClicked(DiaryEntry entry) {
-       
+
     }
 
     public void onBackButtonClick(View view) {

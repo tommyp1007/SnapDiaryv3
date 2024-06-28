@@ -93,10 +93,17 @@ public class SavedDiariesFragment extends Fragment implements DiaryAdapter.OnEnt
 
     @Override
     public void onEntryDetailsClicked(DiaryEntry entry) {
-        Intent intent = new Intent(requireContext(), DiaryEntryDetailsActivity.class);
-        intent.putExtra("entryId", entry.getEntryId());
-        startActivity(intent);
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        if (mAuth.getCurrentUser() != null) {
+            Intent intent = new Intent(requireContext(), DiaryEntryDetailsActivity.class);
+            intent.putExtra("entryId", entry.getEntryId());
+            requireContext().startActivity(intent);  // Use requireContext() to start activity
+        } else {
+            Toast.makeText(requireContext(), "User not authenticated", Toast.LENGTH_SHORT).show();
+            // Handle authentication flow or redirect to login screen
+        }
     }
+
 
 
 
@@ -124,4 +131,5 @@ public class SavedDiariesFragment extends Fragment implements DiaryAdapter.OnEnt
             Toast.makeText(requireContext(), "User not authenticated", Toast.LENGTH_SHORT).show();
         }
     }
+
 }
