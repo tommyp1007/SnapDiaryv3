@@ -336,9 +336,9 @@ public class CreateDiaryFragment extends Fragment {
         }
 
         long timestamp = System.currentTimeMillis();
-
-        DiaryEntry diaryEntry = new DiaryEntry(description, moodLevel, imageUri != null ?
-                imageUri.toString() : null, audioFilePath, timestamp);
+        String audioUri = "some_uri";
+        DiaryEntry diaryEntry = new DiaryEntry(description, moodLevel,
+                imageUri != null ? imageUri.toString() : null, audioFilePath, timestamp, audioFilePath); // Make sure audioFilePath is correctly set here
 
         diaryRef.child(entryId).setValue(diaryEntry)
                 .addOnSuccessListener(aVoid -> {

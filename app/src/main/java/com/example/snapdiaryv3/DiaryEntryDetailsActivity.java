@@ -1,9 +1,11 @@
 package com.example.snapdiaryv3;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -21,6 +23,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -35,6 +38,9 @@ public class DiaryEntryDetailsActivity extends AppCompatActivity {
     private RatingBar ratingBarMood;
     private ImageView imageViewPhoto;
     private TextView textViewTimestamp;
+    private Button buttonPlaybackAudio; // Changed to Button for playback
+    private MediaPlayer mediaPlayer;
+    private String audioFilePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,15 +48,14 @@ public class DiaryEntryDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.fragment_diary_entry_details);
 
         mAuth = FirebaseAuth.getInstance();
+        userId = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser().getUid() : null;
 
-        if (mAuth.getCurrentUser() == null) {
-            // User is not logged in, redirect to login activity
+        if (userId == null) {
             startActivity(new Intent(this, LoginActivity.class));
             finish();
             return;
         }
 
-        userId = mAuth.getCurrentUser().getUid();
         diaryRef = FirebaseDatabase.getInstance().getReference("diaries").child(userId);
 
         ImageButton buttonBack = findViewById(R.id.buttonBack);
@@ -60,24 +65,38 @@ public class DiaryEntryDetailsActivity extends AppCompatActivity {
         ratingBarMood = findViewById(R.id.ratingBarMood);
         imageViewPhoto = findViewById(R.id.imageViewPhoto);
         textViewTimestamp = findViewById(R.id.textViewTimestamp);
+        buttonPlaybackAudio = findViewById(R.id.buttonPlaybackAudio);
 
         String entryId = getIntent().getStringExtra("entryId");
 
-        // Fetch entry details from database using entryId and display in UI
-        fetchEntryDetails(entryId);
+        if (entryId != null) {
+            fetchEntryDetails(entryId);
+        } else {
+            Toast.makeText(this, "Entry ID not found", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
+        buttonPlaybackAudio.setOnClickListener(v -> playRecording());
     }
 
-    public void onBackButtonClick(View view) {
-        onBackPressed();
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
+    private void playRecording() {
+        if (audioFilePath == null) {
+            Toast.makeText(this, "Audio file path is null", Toast.LENGTH_SHORT).show();
+            return;
         }
-        return super.onOptionsItemSelected(item);
+
+        mediaPlayer = new MediaPlayer();
+        try {
+            mediaPlayer.setDataSource(audioFilePath);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+            Toast.makeText(this, "Playing audio", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Failed to play audio", Toast.LENGTH_SHORT).show();
+        }
     }
+
 
     private void fetchEntryDetails(String entryId) {
         diaryRef.child(entryId).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -95,6 +114,8 @@ public class DiaryEntryDetailsActivity extends AppCompatActivity {
                         imageViewPhoto.setVisibility(View.GONE);
                     }
 
+                    audioFilePath = entry.getAudioFilePath(); // Ensure audioFilePath is correctly retrieved
+
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
                     String dateString = sdf.format(new Date(entry.getTimestamp()));
                     textViewTimestamp.setText(dateString);
@@ -109,4 +130,18 @@ public class DiaryEntryDetailsActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void onBackButtonClick(View view) {
+        onBackPressed();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
+

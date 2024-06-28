@@ -95,6 +95,8 @@ public class SavedDiariesFragment extends Fragment implements DiaryAdapter.OnEnt
     }
 
 
+
+
     @Override
     public void onEntryDeleteClicked(int position) {
         if (mAuth.getCurrentUser() != null) {

@@ -12,8 +12,6 @@
         android:onClick="onBackButtonClick" />
 
     <!-- Detailed diary entry content -->
-
-
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -54,19 +52,15 @@
                 android:scaleType="centerCrop"
                 android:src="@drawable/snapdiarylogo" />
 
-            <!-- Audio button, play button, etc. -->
+            <!-- Audio button -->
             <Button
-                android:id="@+id/buttonPlayAudio"
+                android:id="@+id/buttonPlaybackAudio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Play Audio"
-                android:visibility="gone" />
-
-            <!-- Delete and Details buttons -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"/>
+                android:visibility="visible"
+                android:layout_gravity="center"
+                android:onClick="playRecording" />
 
             <!-- Timestamp -->
             <TextView

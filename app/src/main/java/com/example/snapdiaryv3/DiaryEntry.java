@@ -8,22 +8,28 @@ public class DiaryEntry {
     private long timestamp; // Timestamp in milliseconds
 
     private String entryId;
+    private String audioFilePath; // Added field
 
     // Default constructor required for calls to DataSnapshot.getValue(DiaryEntry.class)
     public DiaryEntry() {
     }
 
     // Parameterized constructor
-    public DiaryEntry(String description, float moodLevel, String imageUri, String audioUri, long timestamp ) {
+    public DiaryEntry(String description, float moodLevel, String imageUri, String audioUri, long timestamp, String audioFilePath) {
         this.description = description;
         this.moodLevel = moodLevel;
         this.imageUri = imageUri;
         this.audioUri = audioUri;
         this.timestamp = timestamp;
-
-
+        this.audioFilePath = audioFilePath;
     }
 
+    // Getter for audioFilePath
+    public String getAudioFilePath() {
+        return audioFilePath;
+    }
+
+    // Other getters and setters
     public String getDescription() {
         return description;
     }
