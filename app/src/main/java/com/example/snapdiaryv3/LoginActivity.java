@@ -52,6 +52,11 @@ public class LoginActivity extends AppCompatActivity {
                 loginUser();
             }
         });
+
+        Intent intent = getIntent();
+        if (intent.getBooleanExtra("fromRegister", false)) {
+            Toast.makeText(this, "Please login to continue.", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void loginUser() {

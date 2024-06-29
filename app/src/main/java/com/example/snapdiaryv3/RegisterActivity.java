@@ -56,7 +56,7 @@ public class RegisterActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Toast.makeText(RegisterActivity.this, "Registration successful. Please login to continue.", Toast.LENGTH_LONG).show();
                             FirebaseUser user = mAuth.getCurrentUser();
-                            navigateToLogin();
+                            navigateToLogin(true);
                         } else {
                             Toast.makeText(RegisterActivity.this, "Authentication failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                         }
@@ -70,8 +70,9 @@ public class RegisterActivity extends AppCompatActivity {
         return email.contains("@") && password.length() > 6 && password.equals(confirmPassword);
     }
 
-    private void navigateToLogin() {
+    private void navigateToLogin(boolean fromRegister) {
         Intent intent = new Intent(this, LoginActivity.class);
+        intent.putExtra("fromRegister", fromRegister);
         startActivity(intent);
         finish();
     }
