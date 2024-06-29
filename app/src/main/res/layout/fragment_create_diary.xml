@@ -51,21 +51,21 @@
 
         <Button
             android:id="@+id/buttonCamera"
-            android:layout_width="148dp"
+            style="@style/LightBlueButtonStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="16dp"
-            android:text="Take Picture"
-            style="@style/LightBlueButtonStyle"/>
+            android:text="Take Picture" />
 
         <Button
             android:id="@+id/buttonSelectImage"
-            android:layout_width="155dp"
+            style="@style/LightBlueButtonStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:baselineAligned="false"
             android:padding="16dp"
-            android:text="Select Image"
-            style="@style/LightBlueButtonStyle"/>
+            android:text="Select Image" />
     </LinearLayout>
 
     <LinearLayout

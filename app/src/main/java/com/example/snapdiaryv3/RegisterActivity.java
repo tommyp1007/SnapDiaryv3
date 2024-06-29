@@ -14,7 +14,7 @@ import com.google.firebase.auth.FirebaseAuth;
 public class RegisterActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
-    private EditText emailField, passwordField;
+    private EditText emailField, passwordField, confirmPasswordField;
     private Toolbar toolbar;
 
     @Override
@@ -25,6 +25,7 @@ public class RegisterActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         emailField = findViewById(R.id.editText);
         passwordField = findViewById(R.id.editText2);
+        confirmPasswordField = findViewById(R.id.editTextConfirmPassword);
 
         // Setup toolbar
         toolbar = findViewById(R.id.toolbar);
@@ -41,9 +42,15 @@ public class RegisterActivity extends AppCompatActivity {
     public void createUser(View v) {
         String email = emailField.getText().toString().trim();
         String password = passwordField.getText().toString().trim();
+        String confirmPassword = confirmPasswordField.getText().toString().trim();
 
-        if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Email or Password cannot be empty", Toast.LENGTH_SHORT).show();
+        if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            Toast.makeText(this, "Email, Password, or Confirm Password cannot be empty", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!password.equals(confirmPassword)) {
+            Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
             return;
         }
 

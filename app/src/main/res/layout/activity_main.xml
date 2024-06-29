@@ -35,4 +35,17 @@
         android:onClick="openRegister"
         android:text="SIGN UP"
         style="@style/LightBlueButtonStyle"/>
+
+    <!-- Copyright text -->
+    <TextView
+        android:id="@+id/textViewCopyright"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="© Sarsab Technology"
+        android:textColor="@android:color/black"
+        android:textSize="12sp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"/>
+
 </RelativeLayout>
