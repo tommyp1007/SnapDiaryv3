@@ -7,10 +7,5 @@
         <item name="android:maxHeight">48dp</item>
     </style>
 
-    <style name="LightBlueButtonStyle">
-        <item name="android:background">@drawable/light_blue_button_background</item>
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:padding">12dp</item>
-    </style>
 
 </resources>
