@@ -76,7 +76,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Delete"
-
+                    style="@style/LightBlueButtonStyle"
                     android:layout_marginTop="8dp"
                     />
 
@@ -86,6 +86,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Details"
+                    style="@style/LightBlueButtonStyle"
                     android:layout_marginTop="8dp"
                    />
 
