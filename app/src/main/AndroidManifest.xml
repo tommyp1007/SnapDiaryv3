@@ -63,7 +63,8 @@
         </provider>
 
 
-        <!-- Diary Entry Details Activity -->
+
+    <!-- Diary Entry Details Activity -->
         <activity
             android:name=".DiaryEntryDetailsActivity"
             android:label="Diary Entry Details"
