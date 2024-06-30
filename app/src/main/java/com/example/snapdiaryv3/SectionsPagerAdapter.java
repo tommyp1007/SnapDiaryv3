@@ -24,6 +24,8 @@ public class SectionsPagerAdapter extends FragmentStateAdapter {
                 return new MoodTrackerFragment();
             case 4:
                 return new UserProfileFragment();
+            case 5:
+                return new MapFragment();  // Add this line
             default:
                 return new HomeFragment();
         }
@@ -31,6 +33,6 @@ public class SectionsPagerAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return 5;
+        return 6;  // Update this to reflect the number of fragments
     }
 }

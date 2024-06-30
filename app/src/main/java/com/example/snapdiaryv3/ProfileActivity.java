@@ -67,6 +67,8 @@ public class ProfileActivity extends AppCompatActivity implements NavigationView
             selectedFragment = new MoodTrackerFragment();
         } else if (itemId == R.id.nav_user_profile) {
             selectedFragment = new UserProfileFragment();
+        } else if (itemId == R.id.nav_map) {  // Add this line
+            selectedFragment = new MapFragment();  // Add this line
         }
 
         if (selectedFragment != null) {
