@@ -21,9 +21,9 @@
 
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="100dp"
+        android:layout_width="180dp"
         android:layout_height="100dp"
-        android:src="@drawable/snapdiarylogo"
+        android:src="@drawable/snapdiaryv3"
         app:layout_constraintTop_toBottomOf="@id/backButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
